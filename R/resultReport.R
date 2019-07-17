@@ -59,7 +59,7 @@ classifiACC <- function(dataY, predY) {
 #' @return A set of metrics for model evaluation: AUC, ACC and R2.
 #' @export 
 #' @import rms
-#' @import glmnet   
+#' @import pROC   
 #' @author Junfang Chen 
 #' @examples  
 #' ## Load data  
@@ -68,6 +68,7 @@ classifiACC <- function(dataY, predY) {
 #' dataY <- methylData[,1]
 #' methylSub <- data.frame(label=dataY, methylData[,c(2:1001)])  
 #' library(ranger) 
+#' library(pROC)
 #' library(rms)
 #' library(BiocParallel) 
 #' param1 <- MulticoreParam(workers = 1) 
