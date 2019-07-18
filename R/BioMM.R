@@ -754,25 +754,29 @@ predByCV <- function(data, repeats, nfolds, FSmethod, cutP, fdr, FScore = Multic
 #' ## Load data  
 #' methylfile <- system.file('extdata', 'methylData.rds', package='BioMM')  
 #' methylData <- readRDS(methylfile)  
-#' ## Annotation files for Mapping CpGs into chromosome  
+#' ## Annotation file
 #' probeAnnoFile <- system.file('extdata', 'cpgAnno.rds', package='BioMM')  
-#' probeAnno <- readRDS(file=probeAnnoFile)  
-#' ## Mapping CpGs into Chromosome
-#' dataList <- omics2chrlist(data=methylData, probeAnno)
+#' featureAnno <- readRDS(file=probeAnnoFile)  
+#' ## Mapping CpGs into Pathways
+#' featureAnno <- readRDS(system.file("extdata", "cpgAnno.rds", package="BioMM")) 
+#' pathlistDB <- readRDS(system.file("extdata", "goDB.rds", package="BioMM")) 
+#' head(featureAnno)   
+#' dataList <- omics2pathlist(data=methylData, pathlistDB, featureAnno, 
+#'                            restrictUp=100, restrictDown=10, minPathSize=10) 
 #' length(dataList)
 #' library(ranger) 
 #' library(BiocParallel)
 #' param1 <- MulticoreParam(workers = 1)
 #' param2 <- MulticoreParam(workers = 20)
-#' ## Not Run
+#' ## Not Run, this will take a bit long
 #' ## stage2data <- BioMMreconData(trainDataList=dataList, testDataList=NULL, 
 #' ##                             resample='CV', dataMode='allTrain', 
-#' ##                             repeatA=1, repeatB=1, nfolds=10, 
+#' ##                             repeatA=50, repeatB=20, nfolds=10, 
 #' ##                             FSmethod=NULL, cutP=0.1, 
 #' ##                             fdr=NULL, FScore=param1, 
 #' ##                             classifier='randForest',
 #' ##                             predMode='classification', 
-#' ##                             paramlist=list(ntree=300, nthreads=20),
+#' ##                             paramlist=list(ntree=500, nthreads=20),
 #' ##                             innerCore=param2, outFileA=NULL, outFileB=NULL) 
 #' ## print(dim(stage2data))
 #' ## print(head(stage2data[,1:5]))
@@ -991,11 +995,16 @@ BioMMstage2pred <- function(trainData, testData, resample = "CV", dataMode,
 #' ## Load data  
 #' methylfile <- system.file('extdata', 'methylData.rds', package='BioMM')  
 #' methylData <- readRDS(methylfile)    
-#' ## Annotation files for Mapping CpGs into chromosome  
+#' ## Annotation file   
 #' probeAnnoFile <- system.file('extdata', 'cpgAnno.rds', package='BioMM')  
-#' probeAnno <- readRDS(file=probeAnnoFile)  
-#' ## Mapping CpGs into Chromosome
-#' dataList <- omics2chrlist(data=methylData, probeAnno)
+#' ## Mapping CpGs into Pathways
+#' featureAnno <- readRDS(file=probeAnnoFile)  
+#' ## Mapping CpGs into Pathways
+#' featureAnno <- readRDS(system.file("extdata", "cpgAnno.rds", package="BioMM")) 
+#' pathlistDB <- readRDS(system.file("extdata", "goDB.rds", package="BioMM")) 
+#' head(featureAnno)   
+#' dataList <- omics2pathlist(data=methylData, pathlistDB, featureAnno, 
+#'                            restrictUp=100, restrictDown=10, minPathSize=10) 
 #' length(dataList) 
 #' library(BiocParallel)
 #' param <- MulticoreParam(workers = 10) 
@@ -1191,7 +1200,7 @@ BioMMstage1pca <- function(trainDataList, testDataList, typeMode = "regular",
 #' ## Load data    
 #' methylfile <- system.file('extdata', 'methylData.rds', package='BioMM')  
 #' methylData <- readRDS(methylfile)    
-#' ## Annotation files for Mapping CpGs into chromosome  
+#' ## Annotation file
 #' probeAnnoFile <- system.file('extdata', 'cpgAnno.rds', package='BioMM')  
 #' probeAnno <- readRDS(file=probeAnnoFile)   
 #' supervisedStage1=TRUE

@@ -115,7 +115,7 @@ Stage-2 test data is learned via independent test set prediction.
 ## Load data    
 methylfile <- system.file('extdata', 'methylData.rds', package='BioMM')  
 methylData <- readRDS(methylfile)    
-## Annotation files for Mapping CpGs into chromosome  
+## Annotation file
 probeAnnoFile <- system.file('extdata', 'cpgAnno.rds', package='BioMM')  
 probeAnno <- readRDS(file=probeAnnoFile)   
 supervisedStage1=TRUE
