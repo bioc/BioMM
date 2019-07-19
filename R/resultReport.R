@@ -59,7 +59,7 @@ classifiACC <- function(dataY, predY) {
 #' @return A set of metrics for model evaluation: AUC, ACC and R2.
 #' @export 
 #' @import rms
-#' @import pROC   
+#' @import pROC
 #' @author Junfang Chen 
 #' @examples  
 #' ## Load data  
@@ -85,7 +85,7 @@ classifiACC <- function(dataY, predY) {
 
 getMetrics <- function(dataY, predY){
     
-    auc <- roc(dataY, predY)$auc      
+    auc <- pROC::roc(dataY, predY)$auc      
     predY <- ifelse(predY>=.5, 1, 0) 
     cat("\n Levels of predicted Y =", nlevels(factor(predY)),"\n\n") 
     ACC <- classifiACC(dataY, predY)  
