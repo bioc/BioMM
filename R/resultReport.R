@@ -111,10 +111,10 @@ getMetrics <- function(dataY, predY){
 #' Rows are the samples, columns are the probes/genes, except that 
 #' the first column is the label (the outcome).
 #' @param posF A logical value indicating if only positively outcome-associated
-#' features should be used. (Default: TRUE)
-#' @param stratify A string. Pathway based stratification method to generate 
-#' \code{blocklist}. 
+#' features should be used. (Default: TRUE) 
 #' @param core The number of cores used for computation. (Default: 1)
+#' @param horizontal A logical value indicating if the plot should be horizontal 
+#' or not. The default is FALSE.
 #' @param fileName The file name specified for the plot. If it is not NULL,
 #' then the plot will be generated. The plot will project the data on the 
 #' first two components. (Default: 'R2explained.png') 
@@ -129,11 +129,12 @@ getMetrics <- function(dataY, predY){
 #' @import BiocParallel
 #' @import variancePartition
 #' @import grDevices
+#' @import vioplot
 #' @export  
 
 
-plotVarExplained <- function(data, posF = TRUE, stratify = c("pathway"), 
-    core = MulticoreParam(), fileName = NULL) {
+plotVarExplained <- function(data, posF = TRUE, 
+    core = MulticoreParam(), horizontal = FALSE, fileName = NULL) {
     
     if (colnames(data)[1] != "label") {
         stop("The first column of the 'data' must be the 'label'!")
@@ -163,18 +164,25 @@ plotVarExplained <- function(data, posF = TRUE, stratify = c("pathway"),
         r2 <- lrm(dataXsub[, i] ~ dataY)$stats["R2"]
     }, BPPARAM = core))
     
-    r2plot <- data.frame(Stage2data = r2mat)
-    stratify <- match.arg(stratify)
-    colnames(r2plot) <- paste0("Reconstructed ", stratify, "s")
+    r2plot <- data.frame(Stage2data = r2mat) 
+    colnames(r2plot) <- paste0("Reconstructed Pathway")
     rownames(r2plot) <- colnames(dataXsub)
     head(r2plot)
     if (is.null(fileName)) {
         fileName <- "R2explained.png"
     }
-    png(fileName, width = 5, height = 6, units = "in", res = 330)
-    print(plotVarPart(r2plot, label.angle = 10, ylab = "Variance explained (%)", 
-        convertToPercent = FALSE))
-    dev.off()
+    if (horizontal == FALSE){
+        png(fileName, width = 5, height = 6, units = "in", res = 330)
+        print(plotVarPart(r2plot, label.angle = 10, ylab = "Variance explained (%)", 
+            convertToPercent = FALSE))
+        dev.off()
+    } else if (horizontal == TRUE){
+        png(fileName, width = 8, height = 6, units = "in", res = 330)
+        vioplot(r2plot, names=c("Reconstructed pathway"), main = "", col="#F8766D", 
+            horizontal=TRUE, xlab="Variance explained (%)",  areaEqual=TRUE)
+        dev.off()
+    }
+    
 }
 
 

@@ -68,6 +68,7 @@ library(rms)
 library(glmnet) 
 library(e1071) 
 library(pROC)
+library(vioplot)
 library(variancePartition)  
 ```
 
@@ -277,7 +278,7 @@ associations likely reflect random effects in the underlying data [6].
 ``` {r stage2dataViz, eval=TRUE}
 param <- MulticoreParam(workers = 1) 
 plotVarExplained(data=stage2dataA, posF=TRUE, 
-                 stratify="pathway", core=param, fileName=NULL)
+                 core=param, horizontal=FALSE, fileName=NULL)
 ``` 
 ![](R2explained.png)
 
