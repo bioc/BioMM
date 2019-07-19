@@ -293,8 +293,7 @@ investigated pathway is pictured as the argument `colorMetric="size"`.
 param <- MulticoreParam(workers = 1) 
 plotRankedFeature(data=stage2dataA, 
                   posF=TRUE, topF=10, 
-                  blocklist=pathlist, 
-                  stratify="pathway",
+                  blocklist=pathlist,
                   rankMetric="R2", 
                   colorMetric="size", 
                   core=param, fileName=NULL)

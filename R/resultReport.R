@@ -197,8 +197,6 @@ plotVarExplained <- function(data, posF = TRUE, stratify = c("pathway"),
 #' For each matrix, rows are the samples and columns are the probe names,  
 #' except that the first column is named 'label'. See also 
 #' \code{\link{omics2pathlist}}.
-#' @param stratify A string. Pathway based stratification method to generate 
-#' \code{blocklist}. 
 #' @param rankMetric A string representing the metrics used for ranking. 
 #' Valid options are c('AUC', 'ACC', 'R2', 'size').
 #' 'size' is the block size.
@@ -226,15 +224,14 @@ plotVarExplained <- function(data, posF = TRUE, stratify = c("pathway"),
 #' @seealso  \code{\link{omics2pathlist}}.
 
 
+
 plotRankedFeature <- function(data, posF = TRUE, topF = 10, blocklist, 
-    stratify = c("pathway"), 
     rankMetric = c("AUC", "ACC", "R2", "size"), 
     colorMetric = c("AUC", "ACC", "R2", "size"), 
     core = MulticoreParam(), fileName = NULL) {
     
-    .getBlockSize <- function(blocklist, stratify = c("pathway")) {
-    
-        stratify <- match.arg(stratify)
+    .getBlockSize <- function(blocklist) {
+     
         ID <- gsub("\\:", ".", names(blocklist))
         size <- unlist(lapply(blocklist, function(d) {
             ncol(d) - 1
@@ -282,15 +279,11 @@ plotRankedFeature <- function(data, posF = TRUE, topF = 10, blocklist,
     }
     
     eMat <- matrix(unlist(metrics), nrow = ncol(dataXsub), byrow = TRUE)
-    colnames(eMat) <- c("AUC", "ACC", "R2")
-    if (stratify == "pathway") {
-        goID <- gsub("\\:", ".", colnames(dataXsub))
-        rownames(eMat) <- goID
-    } else {
-        rownames(eMat) <- colnames(dataXsub)
-    }
+    colnames(eMat) <- c("AUC", "ACC", "R2") 
+    goID <- gsub("\\:", ".", colnames(dataXsub))
+    rownames(eMat) <- goID 
     ## checking the 'blocklist'
-    blockSize <- .getBlockSize(blocklist, stratify)
+    blockSize <- .getBlockSize(blocklist)
     ## double check the overlapping IDs
     sharedID <- intersect(rownames(eMat), blockSize[, "ID"])
     eMatSub <- eMat[is.element(rownames(eMat), sharedID), ]
@@ -306,15 +299,11 @@ plotRankedFeature <- function(data, posF = TRUE, topF = 10, blocklist,
     topPat$ID <- factor(topPat$ID, levels = rev(unique(topPat$ID))) 
     x <- "ID"
     y <- rankMetric 
-    colorby <- match.arg(colorMetric)
-    stratify <- match.arg(stratify) 
-    if (stratify == "pathway") {
-        subtitle <- "Pathways"
-    } 
+    colorby <- match.arg(colorMetric) 
+    subtitle <- "Pathways" 
     title <- paste0("Top ", topF, " ", subtitle)
     if (is.null(fileName)) {
-        fileName <- paste0("plotTopF", topF, "_", rankMetric, "_", stratify, 
-            ".png")
+        fileName <- paste0("plotTopF", topF, "_", rankMetric, "_pathway.png")
     }
     png(fileName, width = 5, height = 6, units = "in", res = 330)
     print(ggplot(topPat, aes_string(x = x, y = y, fill = colorby)) + 
