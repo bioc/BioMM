@@ -1,3 +1,8 @@
+Changes in version 1.1.5
+============= 
+	o updated BioMM(); 'dataMode' added.
+	o fixed roc() in getMetrics()
+
 Changes in version 1.1.4
 ============= 
 	o removed the examples with omcis2chrlist()
