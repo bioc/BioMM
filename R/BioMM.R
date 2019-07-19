@@ -1149,6 +1149,11 @@ BioMMstage1pca <- function(trainDataList, testDataList, typeMode = "regular",
 #' @param resample2 The resampling methods at stage-2. Valid options are 'CV' 
 #' and 'BS'. 'CV' for cross validation and 'BS' for bootstrapping resampling.
 #' The default is 'CV'. 
+#' @param dataMode The input training data mode for model training.
+#' It is used only if 'testData' is present. It can be a subset of 
+#' the whole training data or the entire training data. 'subTrain' 
+#' is the given for subsetting and 'allTrain' for the entire training
+#' dataset. 
 #' @param repeatA1 The number of repeats N is used during resampling procedure.
 #' Repeated cross validation or multiple boostrapping is performed if N >=2. 
 #' One can choose 10 repeats for 'CV' and 100 repeats for 'BS'.
@@ -1216,7 +1221,7 @@ BioMMstage1pca <- function(trainDataList, testDataList, typeMode = "regular",
 #' ##                 pathlistDB, featureAnno=probeAnno, 
 #' ##                 restrictUp=10, restrictDown=200, minPathSize=10, 
 #' ##                 supervisedStage1, typePCA='regular', 
-#' ##                 resample1='BS', resample2='CV', 
+#' ##                 resample1='BS', resample2='CV', dataMode="allTrain",
 #' ##                 repeatA1=20, repeatA2=1, repeatB1=20, repeatB2=1, 
 #' ##                 nfolds=10, FSmethod1=NULL, FSmethod2=NULL, 
 #' ##                 cutP1=0.1, cutP2=0.1, fdr2=NULL, FScore=param1, 
@@ -1225,7 +1230,7 @@ BioMMstage1pca <- function(trainDataList, testDataList, typeMode = "regular",
 
 BioMM <- function(trainData, testData, pathlistDB, featureAnno, 
     restrictUp, restrictDown, minPathSize, supervisedStage1 = TRUE, 
-    typePCA, resample1 = "BS", resample2 = "CV",  
+    typePCA, resample1 = "BS", resample2 = "CV", dataMode = "allTrain", 
     repeatA1 = 100, repeatA2 = 1, repeatB1 = 20, repeatB2 = 1, 
     nfolds = 10, FSmethod1, FSmethod2, 
     cutP1, cutP2, fdr2, FScore = MulticoreParam(), classifier, 
