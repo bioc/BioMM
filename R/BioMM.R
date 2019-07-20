@@ -1265,12 +1265,12 @@ BioMM <- function(trainData, testData, pathlistDB, featureAnno,
     
     if (is.null(testDataList)) {
         trainData2 <- stage2data
+        testData2 <- NULL
         message("Stage-2: >>> ")
         message(paste0("Number of blocks: ", ncol(trainData2) - 1))
         trainPos2 <- getDataByFilter(trainData = trainData2, testData = NULL, 
             FSmethod = "positive", cutP = 0.1, fdr = NULL, FScore = FScore)
-        message(paste0("Number of positive blocks: ", ncol(trainPos2) - 1))
-        testPos2 <- NULL
+        message(paste0("Number of positive blocks: ", ncol(trainPos2) - 1)) 
     } else {
         ## if testData provided
         trainData2 <- stage2data[[1]]
@@ -1278,18 +1278,17 @@ BioMM <- function(trainData, testData, pathlistDB, featureAnno,
         datalist <- getDataByFilter(trainData2, testData2, FSmethod = "positive", 
             cutP = 0.1, fdr = NULL, FScore = FScore)
         ## include the label
-        trainPos2 <- datalist[[1]]
-        testPos2 <- datalist[[2]]
+        trainPos2 <- datalist[[1]] 
         message(paste0("Number of positive blocks: ", ncol(trainPos2) - 1))
     }
     
     ## If no positive features
     if (is.null(trainPos2)) {
-        message("Warning: no positive features!!")
+        message("Warning: No positive features!!")
         result <- data.frame(AUC = 0.5, ACC = 0.5, R2 = 0)
     } else if (!is.null(trainPos2)){
-        ## make prediction
-        result <- BioMMstage2pred(trainData = trainPos2, testData = testPos2, 
+        ## make prediction 
+        result <- BioMMstage2pred(trainData = trainData2, testData = testData2, 
             resample = resample2, dataMode, repeatA = repeatA2, 
             repeatB = repeatB2, nfolds, FSmethod = FSmethod2, cutP = cutP2, 
             fdr = fdr2, FScore = FScore, classifier = classifier, 
