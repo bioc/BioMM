@@ -3,7 +3,7 @@ title: "BioMM: Biological-informed Multi-stage Machine learning framework for ph
 author:
  - name: Junfang Chen and Emanuel Schwarz
    affiliation: Central Institute of Mental Health, Heidelberg University, Germany  
-date: "Modified: 10 July 2019. Compiled: `r format(Sys.Date(), '%d %b %Y')`"
+date: "Modified: 17 July 2019. Compiled: `r format(Sys.Date(), '%d %b %Y')`"
 output: 
   BiocStyle::html_document: 
     toc_float: false
@@ -66,15 +66,17 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install(version='devel')
 BiocManager::install("BioMM")
 ```
- 
+Note that, two different parallel computing approaches are implemented: the parallel package is used in Github version (Only for linux and MAC OS) and the BiocParallel is for Bioconductor.
+
 * Load required libraries
 ```{r loadPkg, eval=TRUE, results="hide"}
 library(BioMM)  
-library(BiocParallel)  
+library(BiocParallel)
+library(parallel)
 library(ranger)
-library(rms) 
-library(glmnet) 
-library(e1071) 
+library(rms)
+library(glmnet)
+library(e1071)
 library(pROC)
 library(vioplot)
 library(variancePartition)  
@@ -160,6 +162,9 @@ predMode <- "classification"
 paramlist <- list(ntree=300, nthreads=10)   
 param1 <- MulticoreParam(workers = 1, progressbar=TRUE)
 param2 <- MulticoreParam(workers = 10, progressbar=TRUE)
+## If BioMM is installed from Github, please use the following assignment:
+## param1 <- 1
+## param1 <- 10
 
 studyDataSub <- studyData[,1:2000] ## to reduce the runtime
 result <- BioMM(trainData=studyDataSub, testData=NULL, pathlistDB, featureAnno, 
@@ -227,6 +232,9 @@ predMode <- "classification"
 paramlist <- list(ntree=300, nthreads=10)   
 param1 <- MulticoreParam(workers = 1, progressbar=TRUE)
 param2 <- MulticoreParam(workers = 10, progressbar=TRUE)
+## If BioMM is installed from Github, please use the following assignment:
+## param1 <- 1
+## param1 <- 10
 
 result <- BioMM(trainData=studyData, testData=NULL, 
                 pathlistDBsub, featureAnno, 
@@ -263,6 +271,9 @@ predMode <- "probability"
 paramlist <- list(ntree=300, nthreads=40)  
 param1 <- MulticoreParam(workers = 1, progressbar=TRUE)
 param2 <- MulticoreParam(workers = 10, progressbar=TRUE) 
+## If BioMM is installed from Github, please use the following assignment:
+## param1 <- 1
+## param1 <- 10
 set.seed(123)
 ## This will take a bit longer to run
 stage2dataA <- reconBySupervised(trainDataList=pathlist, testDataList=NULL,
@@ -285,6 +296,8 @@ associations likely reflect random effects in the underlying data [6].
 
 ``` {r stage2dataViz, eval=TRUE}
 param <- MulticoreParam(workers = 1) 
+## If BioMM is installed from Github, please use the following assignment:
+## param <- 1 
 plotVarExplained(data=stage2dataA, posF=TRUE, 
                  core=param, horizontal=FALSE, fileName=NULL)
 ``` 
@@ -300,6 +313,8 @@ investigated pathway is pictured as the argument `colorMetric="size"`.
 
 ``` {r topFstage2data, eval=TRUE} 
 param <- MulticoreParam(workers = 10, progressbar=TRUE) 
+## If BioMM is installed from Github, please use the following assignment:
+## param <- 1 
 plotRankedFeature(data=stage2dataA, 
                   posF=TRUE, topF=10, 
                   blocklist=pathlist,
