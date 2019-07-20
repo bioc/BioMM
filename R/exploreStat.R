@@ -4,7 +4,7 @@
 
 ############################################################################### 
 
-#' Return the data after feature selection 
+#' Return the data by feature filtering 
 #'
 #' @description 
 #' Identify and select a subset of outcome-associated or predictive features in 
@@ -56,7 +56,7 @@
 #' library(BiocParallel)
 #' param <- MulticoreParam(workers = 10)
 #' ## Select outcome-associated features based on the Wilcoxon test (P<0.1)
-#' datalist <- getDataAfterFS(trainData, testData, FSmethod="wilcox.test", 
+#' datalist <- getDataByFilter(trainData, testData, FSmethod="wilcox.test", 
 #'                            cutP=0.1, fdr=NULL, FScore=param)
 #' trainDataSub <- datalist[[1]] 
 #' testDataSub <- datalist[[2]] 
@@ -64,7 +64,7 @@
 #' print(dim(trainDataSub))
 
 
-getDataAfterFS <- function(trainData, testData, FSmethod, cutP = 0.1, 
+getDataByFilter <- function(trainData, testData, FSmethod, cutP = 0.1, 
     fdr = NULL, FScore = MulticoreParam()) {
     
     if (colnames(trainData)[1] != "label") {

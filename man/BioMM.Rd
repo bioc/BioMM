@@ -80,9 +80,8 @@ The default is 10.}
 are c(NULL, 'positive', 'wilcox.test', 'cor.test', 'chisq.test', 
 'posWilcox').}
 
-\item{FSmethod2}{Feature selection methods at stage-2. Available options
-are c(NULL, 'positive', 'wilcox.test', 'cor.test', 'chisq.test', 
-'posWilcox').}
+\item{FSmethod2}{Feature selection methods at stage-2. Features that are 
+positively associated with the outcome will be used.}
 
 \item{cutP1}{The cutoff used for p value thresholding at stage-1.
 Commonly used cutoffs are c(0.5, 0.1, 0.05, 0.01, etc).}
@@ -154,6 +153,6 @@ stacking: Building seemingly predictive models on random data. ACM SIGKDD
 Explorations Newsletter, 12(2), 11-15.
 }
 \seealso{
-\code{\link{BioMMreconData}}; \code{\link{BioMMstage1pca}}; 
+\code{\link{reconBySupervised}}; \code{\link{reconByUnsupervised}}; 
 \code{\link{BioMMstage2pred}}
 }

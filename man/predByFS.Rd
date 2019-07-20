@@ -72,7 +72,7 @@ accuracy <- classifiACC(dataY=testY, predY=predY)
 print(accuracy)  
 }
 \seealso{
-\code{\link{getDataAfterFS}}
+\code{\link{getDataByFilter}}
 }
 \author{
 Junfang Chen
