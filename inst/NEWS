@@ -1,6 +1,9 @@
 Changes in version 1.1.6
 ============= 
 	o improved plotVarExplained() and plotRankedFeature()
+	o renamed R functions for getDataAfterFS, BioMMreconData, BioMMstage1pca
+	o updated installation approaches (including R 3.5 from Github)
+	o updated tutorial to adapt the usage of the parallel package installed from Github
 
 Changes in version 1.1.5
 ============= 
