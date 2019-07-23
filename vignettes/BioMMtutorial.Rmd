@@ -66,7 +66,7 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install(version='devel')
 BiocManager::install("BioMM")
 ```
-Note that, two different parallel computing approaches are implemented: the parallel package is used in Github version (Only for linux and MAC OS) and the BiocParallel is for Bioconductor.
+Note that, two different parallel computing approaches are implemented: the parallel package is implemented in Github version (Only for linux and MAC OS) and the BiocParallel is for Bioconductor.
 
 * Load required libraries
 ```{r loadPkg, eval=TRUE, results="hide"}
@@ -160,8 +160,8 @@ supervisedStage1=TRUE
 classifier <- "randForest"
 predMode <- "classification"
 paramlist <- list(ntree=300, nthreads=10)   
-param1 <- MulticoreParam(workers = 1, progressbar=TRUE)
-param2 <- MulticoreParam(workers = 10, progressbar=TRUE)
+param1 <- MulticoreParam(workers = 1)
+param2 <- MulticoreParam(workers = 10)
 ## If BioMM is installed from Github, please use the following assignment:
 ## param1 <- 1
 ## param1 <- 10
@@ -230,8 +230,8 @@ supervisedStage1=FALSE
 classifier <- "randForest"
 predMode <- "classification"
 paramlist <- list(ntree=300, nthreads=10)   
-param1 <- MulticoreParam(workers = 1, progressbar=TRUE)
-param2 <- MulticoreParam(workers = 10, progressbar=TRUE)
+param1 <- MulticoreParam(workers = 1)
+param2 <- MulticoreParam(workers = 10)
 ## If BioMM is installed from Github, please use the following assignment:
 ## param1 <- 1
 ## param1 <- 10
@@ -269,8 +269,8 @@ dim(stage2dataA)
 classifier <- "randForest" 
 predMode <- "probability" 
 paramlist <- list(ntree=300, nthreads=40)  
-param1 <- MulticoreParam(workers = 1, progressbar=TRUE)
-param2 <- MulticoreParam(workers = 10, progressbar=TRUE) 
+param1 <- MulticoreParam(workers = 1)
+param2 <- MulticoreParam(workers = 10) 
 ## If BioMM is installed from Github, please use the following assignment:
 ## param1 <- 1
 ## param1 <- 10
@@ -312,7 +312,7 @@ features as indicated by the argument `rankMetric="R2"`. The size of the
 investigated pathway is pictured as the argument `colorMetric="size"`. 
 
 ``` {r topFstage2data, eval=TRUE} 
-param <- MulticoreParam(workers = 10, progressbar=TRUE) 
+param <- MulticoreParam(workers = 10) 
 ## If BioMM is installed from Github, please use the following assignment:
 ## param <- 1 
 plotRankedFeature(data=stage2dataA, 
