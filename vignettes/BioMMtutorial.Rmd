@@ -164,7 +164,7 @@ param1 <- MulticoreParam(workers = 1)
 param2 <- MulticoreParam(workers = 10)
 ## If BioMM is installed from Github, please use the following assignment:
 ## param1 <- 1
-## param1 <- 10
+## param2 <- 10
 
 studyDataSub <- studyData[,1:2000] ## to reduce the runtime
 result <- BioMM(trainData=studyDataSub, testData=NULL, pathlistDB, featureAnno, 
@@ -234,7 +234,7 @@ param1 <- MulticoreParam(workers = 1)
 param2 <- MulticoreParam(workers = 10)
 ## If BioMM is installed from Github, please use the following assignment:
 ## param1 <- 1
-## param1 <- 10
+## param2 <- 10
 
 result <- BioMM(trainData=studyData, testData=NULL, 
                 pathlistDBsub, featureAnno, 
@@ -273,7 +273,7 @@ param1 <- MulticoreParam(workers = 1)
 param2 <- MulticoreParam(workers = 10) 
 ## If BioMM is installed from Github, please use the following assignment:
 ## param1 <- 1
-## param1 <- 10
+## param2 <- 10
 set.seed(123)
 ## This will take a bit longer to run
 stage2dataA <- reconBySupervised(trainDataList=pathlist, testDataList=NULL,
