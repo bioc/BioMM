@@ -1,3 +1,8 @@
+Changes in version 1.1.8
+============= 
+	o updated tutorial: fixed typo 'param1' to 'param2'
+	o added a new function cirPlot4pathway()
+
 Changes in version 1.1.7
 ============= 
 	o updated tutorial
