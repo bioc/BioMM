@@ -1,3 +1,8 @@
+Changes in version 1.1.9
+============= 
+	o updated tutorial: updated description for two parallel computing; cirPlot4pathway() example added; seeds added
+	o updated plotRankedFeature().
+
 Changes in version 1.1.8
 ============= 
 	o updated tutorial: fixed typo 'param1' to 'param2'
