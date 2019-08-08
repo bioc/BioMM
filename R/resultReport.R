@@ -165,7 +165,7 @@ plotVarExplained <- function(data, posF = TRUE,
     }, BPPARAM = core))
     
     r2plot <- data.frame(Stage2data = r2mat) 
-    colnames(r2plot) <- paste0("Reconstructed Pathway")
+    colnames(r2plot) <- paste0("Biological Pathway")
     rownames(r2plot) <- colnames(dataXsub)
     head(r2plot)
     if (is.null(fileName)) {
@@ -178,7 +178,7 @@ plotVarExplained <- function(data, posF = TRUE,
         dev.off()
     } else if (horizontal == TRUE){
         png(fileName, width = 8, height = 6, units = "in", res = 330)
-        vioplot(r2plot, names=c("Reconstructed pathway"), main = "", col="#F8766D", 
+        vioplot(r2plot, names=c("Biological pathway"), main = "", col="#F8766D", 
             horizontal=TRUE, xlab="Variance explained (%)",  areaEqual=TRUE)
         dev.off()
     }
