@@ -66,11 +66,11 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install(version='devel')
 BiocManager::install("BioMM")
 ```
-Note that, two different parallel computing approaches are implemented: the parallel package is implemented in Github version (Only for linux and MAC OS) and the BiocParallel is for Bioconductor.
+Note that, two different parallel computing strategies are implemented: For BioMM package installed from the Github, the parallel R package is implemented. The BiocParallel R package is employed in Bioconductor BioMM package which allows the use of parallel computation across possible systems.
 
 * Load required libraries
 ```{r loadPkg, eval=TRUE, results="hide"}
-library(BioMM)  
+library(BioMM)
 library(BiocParallel)
 library(parallel)
 library(ranger)
@@ -79,7 +79,8 @@ library(glmnet)
 library(e1071)
 library(pROC)
 library(vioplot)
-library(variancePartition)  
+library(variancePartition)
+library(CMplot)
 ```
 
 # Omics data 
@@ -167,6 +168,7 @@ param2 <- MulticoreParam(workers = 10)
 ## param2 <- 10
 
 studyDataSub <- studyData[,1:2000] ## to reduce the runtime
+set.seed(123)
 result <- BioMM(trainData=studyDataSub, testData=NULL, pathlistDB, featureAnno, 
                 restrictUp=100, restrictDown=10, minPathSize=10, 
                 supervisedStage1, typePCA="regular", 
@@ -236,6 +238,7 @@ param2 <- MulticoreParam(workers = 10)
 ## param1 <- 1
 ## param2 <- 10
 
+set.seed(123)
 result <- BioMM(trainData=studyData, testData=NULL, 
                 pathlistDBsub, featureAnno, 
                 restrictUp=100, restrictDown=10, minPathSize=10, 
@@ -315,14 +318,32 @@ investigated pathway is pictured as the argument `colorMetric="size"`.
 param <- MulticoreParam(workers = 10) 
 ## If BioMM is installed from Github, please use the following assignment:
 ## param <- 1 
-plotRankedFeature(data=stage2dataA, 
-                  posF=TRUE, topF=10, 
-                  blocklist=pathlist,
-                  rankMetric="R2", 
-                  colorMetric="size", 
-                  core=param, fileName=NULL)
+topPath <- plotRankedFeature(data=stage2dataA, 
+                             posF=TRUE, topF=10, 
+                             blocklist=pathlist,
+                             rankMetric="R2", 
+                             colorMetric="size", 
+                             core=param, fileName=NULL)
 ``` 
 ![](plotTopF10_R2_pathway.png)
+
+#### The significance of CpGs in pathways of interest
+`cirPlot4pathway()` illustrates the significance of the individual CpGs falling 
+into a set of pathways. Here the top 10 outcome-associated pathways are investigated.
+Negative log P value is used to define the significance of each CpG within these pathways.
+
+``` {r cirPlot, eval=TRUE}  
+core <- MulticoreParam(workers = 10)  
+## If BioMM is installed from Github, use the following assignment:
+## core <- 10
+pathID <- gsub("\\.", ":", rownames(topPath))
+pathSet <- pathlist[is.element(names(pathlist), pathID)]
+pathMatch <- pathSet[match(pathID, names(pathSet))]
+
+cirPlot4pathway(datalist=pathMatch, 
+                topPathID=names(pathMatch), core, fileName=NULL)
+
+``` 
 
 ## Computational consideration
 BioMM with supervised models at both stages incorporating pathway based 
