@@ -40,7 +40,7 @@ omics-scale data based on biological prior information, for example, gene ontolo
 
 **Features of BioMM in a nutshell**:   
 
-1. Applicability for all omics data modalities.      
+1. Applicability for various omics data modalities.      
 2. Prioritizing outcome-associated functional patterns.   
 3. End-to-end prediction at the individual level based on biological 
 pathway stratification.  
@@ -66,7 +66,8 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install(version='devel')
 BiocManager::install("BioMM")
 ```
-Note that, two different parallel computing strategies are implemented: For BioMM package installed from the Github, the parallel R package is implemented. The BiocParallel R package is employed in Bioconductor BioMM package which allows the use of parallel computation across possible systems.
+
+Note that, two different parallel computing strategies are implemented: For BioMM package available on Github, the parallel R package is implemented. The BiocParallel R package is employed in Bioconductor BioMM package which allows the use of parallel computation across any system.
 
 * Load required libraries
 ```{r loadPkg, eval=TRUE, results="hide"}
@@ -119,7 +120,7 @@ pathlist <- omics2pathlist(data=studyData, pathlistDBsub, featureAnno,
 
 # BioMM framework
 
-## Introduction
+## Recapitulation
 Briefly, the BioMM framework consists of two learning stages [1]. During the 
 first stage, biological meta-information is used to 'compress' the variables 
 of the original dataset into pathway-level 'latent variables' (henceforth 
@@ -153,7 +154,7 @@ focused on the autosomal region to limit the potential influence of sex on
 machine learning due to the phenomenon of X chromosome inactivation or the 
 existence of an additional X chromosome in female samples. Therefore it's 
 suggested to exclude sex chromosome in the user-supplied `featureAnno` input 
-file.
+file. 
 
 ```{r BioMMrandForest, eval=TRUE}
 ## Parameters
@@ -252,7 +253,7 @@ print(result)
 ``` 
 
 ## Stage-2 data exploration 
-### Reconstruction
+### Generation of stage-2 data
 Here we demonstrate using supervised random forest method on genome-wide DNA 
 methylation. Gene ontological pathways are used for the generation of stage-2 
 data.
@@ -343,7 +344,9 @@ pathMatch <- pathSet[match(pathID, names(pathSet))]
 cirPlot4pathway(datalist=pathMatch, 
                 topPathID=names(pathMatch), core, fileName=NULL)
 
+
 ``` 
+![](Circular-Manhattan.pval.jpg)
 
 ## Computational consideration
 BioMM with supervised models at both stages incorporating pathway based 
