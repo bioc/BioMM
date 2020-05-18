@@ -28,7 +28,7 @@
 #' c(NULL, 'fdr', 'BH', 'holm' etc). 
 #' See also \code{\link[stats]{p.adjust}}. The default is NULL.
 #' @param FScore The number of cores used for some feature selection methods.
-#' The default is 10.
+#' If it's NULL, then no parallel computing is applied.
 
 #' @return Both training and test data (if provided) with pre-selected 
 #' features are returned if feature selection method is applied. 
@@ -91,43 +91,77 @@ getDataByFilter <- function(trainData, testData, FSmethod, cutP = 0.1,
         ## only positively correlated use 'which' to keep the remaining index
         selFeature <- which(cor(trainX, trainY) > 0)
     } else if (FSmethod == "wilcox.test") {
-        featurelist <- as.list(seq_len(ncol(trainX)))
-        pvTrain <- unlist(bplapply(featurelist, function(i) {
-            wilcox.test(trainX[, i] ~ as.factor(trainY))$p.value
-        }, BPPARAM = FScore))
+        featurelist <- as.list(seq_len(ncol(trainX))) 
+        if (!is.null(FScore)){ 
+            pvTrain <- unlist(bplapply(featurelist, function(i) {
+                    wilcox.test(trainX[, i] ~ as.factor(trainY))$p.value
+                }, BPPARAM = FScore))
+        } else if (is.null(FScore)) { 
+            pvTrain <- unlist(lapply(featurelist, function(i) {
+                wilcox.test(trainX[, i] ~ as.factor(trainY))$p.value
+            }))
+        } 
         selFeature <- which(pvTrain < cutP)
     } else if (FSmethod == "cor.test") {
         featurelist <- as.list(seq_len(ncol(trainX)))
-        pvTrain <- unlist(bplapply(featurelist, function(i) {
-            cor.test(trainX[, i], trainY)$p.value
-        }, BPPARAM = FScore))
+        if (!is.null(FScore)){ 
+            pvTrain <- unlist(bplapply(featurelist, function(i) {
+                    cor.test(trainX[, i] ~ as.factor(trainY))$p.value
+                }, BPPARAM = FScore))
+        } else if (is.null(FScore)) { 
+            pvTrain <- unlist(lapply(featurelist, function(i) {
+                cor.test(trainX[, i] ~ as.factor(trainY))$p.value
+            }))
+        } 
         selFeature <- which(pvTrain < cutP)
     } else if (FSmethod == "chisq.test") {
-        featurelist <- as.list(seq_len(ncol(trainX)))
-        pvTrain <- unlist(bplapply(featurelist, function(i) {
-            if (length(table(trainX[, i])) != 1) {
-                pv <- chisq.test(trainX[, i], as.factor(trainY))$p.value
-                names(pv) <- featureNames[i]
-                pv
-            }
-        }, BPPARAM = FScore))
+        featurelist <- as.list(seq_len(ncol(trainX))) 
+        if (!is.null(FScore)){ 
+            pvTrain <- unlist(bplapply(featurelist, function(i) {
+                if (length(table(trainX[, i])) != 1) {
+                    pv <- chisq.test(trainX[, i], as.factor(trainY))$p.value
+                    names(pv) <- featureNames[i]
+                    pv
+                }
+            }, BPPARAM = FScore))
+        } else if (is.null(FScore)) { 
+            pvTrain <- unlist(lapply(featurelist, function(i) {
+                if (length(table(trainX[, i])) != 1) {
+                    pv <- chisq.test(trainX[, i], as.factor(trainY))$p.value
+                    names(pv) <- featureNames[i]
+                    pv
+                }
+            }))
+        } 
         indexNew <- match(featureNames, names(pvTrain))
         pvTrain2 <- pvTrain[indexNew]
         selFeature <- which(pvTrain2 < cutP)
     } else if (FSmethod == "posWilcox") {
         whPos <- which(cor(trainX, trainY) > 0)
-        featurelist <- as.list(seq_len(ncol(trainX)))
-        pvTrain <- unlist(bplapply(featurelist, function(i) {
-            wilcox.test(trainX[, i] ~ as.factor(trainY))$p.value
-        }, BPPARAM = FScore))
+        featurelist <- as.list(seq_len(ncol(trainX))) 
+        if (!is.null(FScore)){ 
+            pvTrain <- unlist(bplapply(featurelist, function(i) {
+                    wilcox.test(trainX[, i] ~ as.factor(trainY))$p.value
+                }, BPPARAM = FScore))
+        } else if (is.null(FScore)) { 
+            pvTrain <- unlist(lapply(featurelist, function(i) {
+                wilcox.test(trainX[, i] ~ as.factor(trainY))$p.value
+            }))
+        } 
         varTmp <- which(pvTrain < cutP)
         selFeature <- intersect(whPos, varTmp)
     } else if (FSmethod == "top10pCor") { 
         topN <- round(ncol(trainX)*0.1) 
         featurelist <- as.list(seq_len(ncol(trainX)))
-        pvTrain <- unlist(bplapply(featurelist, function(i){
-            wilcox.test(trainX[, i]~as.factor(trainY))$p.value
-        }, BPPARAM=FScore))  
+        if (!is.null(FScore)){ 
+            pvTrain <- unlist(bplapply(featurelist, function(i) {
+                    wilcox.test(trainX[, i] ~ as.factor(trainY))$p.value
+                }, BPPARAM = FScore))
+        } else if (is.null(FScore)) { 
+            pvTrain <- unlist(lapply(featurelist, function(i) {
+                wilcox.test(trainX[, i] ~ as.factor(trainY))$p.value
+            }))
+        } 
         selFeature <- order(pvTrain, decreasing=FALSE)[seq_len(topN)]   
         if (length(selFeature) <= 2){
             selFeature <- order(pvTrain, decreasing=FALSE)[seq_len(2)]
@@ -170,4 +204,5 @@ getDataByFilter <- function(trainData, testData, FSmethod, cutP = 0.1,
         result <- subTrain
     }
     
+    return(result)
 }

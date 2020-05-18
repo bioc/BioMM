@@ -77,6 +77,7 @@ baseRandForest <- function(trainData, testData, predMode = c("classification",
         predTest <- round(predTest, 3)
     }
 
+    return(predTest)
 }
 
 
@@ -208,6 +209,8 @@ baseSVM <- function(trainData, testData,
         }
     }
 
+    return(predTest)
+
 }
 
 
@@ -313,6 +316,7 @@ baseGLMnet <- function(trainData, testData,
         predTest = round(yhat[, 1], 3)
     }
 
+    return(predTest)
 }
 
 
@@ -382,6 +386,7 @@ baseModel <- function(trainData, testData,
         predTest <- baseGLMnet(trainData, testData, predMode, paramlist)
     }
 
+    return(predTest)
 }
 
 
@@ -694,6 +699,7 @@ predByCV <- function(data, repeats, nfolds, FSmethod, cutP, fdr, FScore = Multic
         predTest <- ifelse(predTest >= 0.5, 1, 0)
     }
 
+    return(predTest)
 }
 
 
@@ -836,6 +842,8 @@ reconBySupervised <- function(trainDataList, testDataList, resample = "BS",
         result <- reconDataA
     }
 
+    return(result)
+
 }
 
 
@@ -934,24 +942,25 @@ BioMMstage2pred <- function(trainData, testData, resample = "CV", dataMode,
             testData$label <- as.numeric(testData$label) - 1
         }
         testY <- testData$label
-        predTest <- predByBS(trainData, testData, dataMode, repeats = repeatB, 
+        predY <- predByBS(trainData, testData, dataMode, repeats = repeatB, 
             FSmethod, cutP, fdr, FScore, classifier, predMode, paramlist, 
             innerCore)
         ## Prediction performance for the ind. test performance
         message(paste0("Test set performance: "))
         if (predMode == "probability") {
-            predTest <- ifelse(predTest >= 0.5, 1, 0)
-            metricTest <- getMetrics(dataY = testY, predTest)
+            predY <- ifelse(predY >= 0.5, 1, 0)
+            metricTest <- getMetrics(dataY = testY, predY)
         } else if (predMode == "classification") {
-            metricTest <- getMetrics(dataY = testY, predTest)
+            metricTest <- getMetrics(dataY = testY, predY)
         } else if (predMode == "regression") {
-            metricTest <- cor(testY, predTest)
+            metricTest <- cor(testY, predY)
         }
         result <- list(metricCV, metricTest)
     } else {
         result <- metricCV
     }
 
+    return(result)
 }
 
 
@@ -1109,6 +1118,7 @@ reconByUnsupervised <- function(trainDataList, testDataList, typeMode = "regular
         result <- reconDataA
     }
 
+    return(result)
 }
 
 
@@ -1295,4 +1305,5 @@ BioMM <- function(trainData, testData, pathlistDB, featureAnno,
             predMode = predMode, paramlist = paramlist, innerCore = innerCore)
     }
     
+    return(result)
 }
