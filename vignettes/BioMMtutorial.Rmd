@@ -3,7 +3,7 @@ title: "BioMM: Biological-informed Multi-stage Machine learning framework for ph
 author:
  - name: Junfang Chen and Emanuel Schwarz
    affiliation: Central Institute of Mental Health, Heidelberg University, Germany  
-date: "Modified: 17 July 2019. Compiled: `r format(Sys.Date(), '%d %b %Y')`"
+date: "Modified: 19 May 2020. Compiled: `r format(Sys.Date(), '%d %b %Y')`"
 output: 
   BiocStyle::html_document: 
     toc_float: false
@@ -49,14 +49,7 @@ pathway stratification.
 
 # Getting started  
 
-## Installation  
-*  Development version from Github (R 3.5):
-
-```{r eval=FALSE}
-install.packages("devtools")
-library("devtools")
-install_github("transbioZI/BioMM")
-```
+## Installation   
 
 *  Install BioMM from Bioconductor (R 3.6):
 ```{r eval=FALSE}
@@ -66,8 +59,6 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install(version='devel')
 BiocManager::install("BioMM")
 ```
-
-Note that, two different parallel computing strategies are implemented: For BioMM package available on Github, the parallel R package is implemented. The BiocParallel R package is employed in Bioconductor BioMM package which allows the use of parallel computation across any system.
 
 * Load required libraries
 ```{r loadPkg, eval=TRUE, results="hide"}
@@ -163,10 +154,7 @@ classifier <- "randForest"
 predMode <- "classification"
 paramlist <- list(ntree=300, nthreads=10)   
 param1 <- MulticoreParam(workers = 1)
-param2 <- MulticoreParam(workers = 10)
-## If BioMM is installed from Github, please use the following assignment:
-## param1 <- 1
-## param2 <- 10
+param2 <- MulticoreParam(workers = 10) 
 
 studyDataSub <- studyData[,1:2000] ## to reduce the runtime
 set.seed(123)
@@ -234,10 +222,7 @@ classifier <- "randForest"
 predMode <- "classification"
 paramlist <- list(ntree=300, nthreads=10)   
 param1 <- MulticoreParam(workers = 1)
-param2 <- MulticoreParam(workers = 10)
-## If BioMM is installed from Github, please use the following assignment:
-## param1 <- 1
-## param2 <- 10
+param2 <- MulticoreParam(workers = 10) 
 
 set.seed(123)
 result <- BioMM(trainData=studyData, testData=NULL, 
@@ -274,10 +259,8 @@ classifier <- "randForest"
 predMode <- "probability" 
 paramlist <- list(ntree=300, nthreads=40)  
 param1 <- MulticoreParam(workers = 1)
-param2 <- MulticoreParam(workers = 10) 
-## If BioMM is installed from Github, please use the following assignment:
-## param1 <- 1
-## param2 <- 10
+param2 <- MulticoreParam(workers = 10)  
+
 set.seed(123)
 ## This will take a bit longer to run
 stage2dataA <- reconBySupervised(trainDataList=pathlist, testDataList=NULL,
@@ -299,9 +282,7 @@ positively outcome-associated features are plotted, since negative
 associations likely reflect random effects in the underlying data [6].
 
 ``` {r stage2dataViz, eval=TRUE}
-param <- MulticoreParam(workers = 1) 
-## If BioMM is installed from Github, please use the following assignment:
-## param <- 1 
+param <- MulticoreParam(workers = 1)  
 plotVarExplained(data=stage2dataA, posF=TRUE, 
                  core=param, horizontal=FALSE, fileName=NULL)
 ``` 
@@ -317,8 +298,7 @@ investigated pathway is pictured as the argument `colorMetric="size"`.
 
 ``` {r topFstage2data, eval=TRUE} 
 param <- MulticoreParam(workers = 10) 
-## If BioMM is installed from Github, please use the following assignment:
-## param <- 1 
+
 topPath <- plotRankedFeature(data=stage2dataA, 
                              posF=TRUE, topF=10, 
                              blocklist=pathlist,
@@ -334,9 +314,7 @@ into a set of pathways. Here the top 10 outcome-associated pathways are investig
 Negative log P value is used to define the significance of each CpG within these pathways.
 
 ``` {r cirPlot, eval=TRUE}  
-core <- MulticoreParam(workers = 10)  
-## If BioMM is installed from Github, use the following assignment:
-## core <- 10
+core <- MulticoreParam(workers = 10)   
 pathID <- gsub("\\.", ":", rownames(topPath))
 pathSet <- pathlist[is.element(names(pathlist), pathID)]
 pathMatch <- pathSet[match(pathID, names(pathSet))]
