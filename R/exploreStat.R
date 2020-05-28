@@ -106,11 +106,11 @@ getDataByFilter <- function(trainData, testData, FSmethod, cutP = 0.1,
         featurelist <- as.list(seq_len(ncol(trainX)))
         if (!is.null(FScore)){ 
             pvTrain <- unlist(bplapply(featurelist, function(i) {
-                    cor.test(trainX[, i] ~ as.factor(trainY))$p.value
+                    cor.test(trainX[, i], trainY)$p.value
                 }, BPPARAM = FScore))
         } else if (is.null(FScore)) { 
             pvTrain <- unlist(lapply(featurelist, function(i) {
-                cor.test(trainX[, i] ~ as.factor(trainY))$p.value
+                cor.test(trainX[, i], trainY)$p.value
             }))
         } 
         selFeature <- which(pvTrain < cutP)
