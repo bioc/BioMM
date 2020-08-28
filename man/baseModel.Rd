@@ -4,9 +4,13 @@
 \alias{baseModel}
 \title{Base supervised machine learning models for prediction}
 \usage{
-baseModel(trainData, testData, classifier = c("randForest", "SVM",
-  "glmnet"), predMode = c("classification", "probability", "regression"),
-  paramlist)
+baseModel(
+  trainData,
+  testData,
+  classifier = c("randForest", "SVM", "glmnet"),
+  predMode = c("classification", "probability", "regression"),
+  paramlist
+)
 }
 \arguments{
 \item{trainData}{The input training dataset. The first column

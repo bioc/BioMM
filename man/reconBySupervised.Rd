@@ -4,10 +4,25 @@
 \alias{reconBySupervised}
 \title{Reconstruct stage-2 data by supervised machine learning prediction}
 \usage{
-reconBySupervised(trainDataList, testDataList, resample = "BS", dataMode,
-  repeatA, repeatB, nfolds, FSmethod, cutP, fdr,
-  FScore = MulticoreParam(), classifier, predMode, paramlist,
-  innerCore = MulticoreParam(), outFileA = NULL, outFileB = NULL)
+reconBySupervised(
+  trainDataList,
+  testDataList,
+  resample = "BS",
+  dataMode,
+  repeatA,
+  repeatB,
+  nfolds,
+  FSmethod,
+  cutP,
+  fdr,
+  FScore = MulticoreParam(),
+  classifier,
+  predMode,
+  paramlist,
+  innerCore = MulticoreParam(),
+  outFileA = NULL,
+  outFileB = NULL
+)
 }
 \arguments{
 \item{trainDataList}{The input training data list containing ordered 

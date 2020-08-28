@@ -4,9 +4,13 @@
 \alias{baseGLMnet}
 \title{Prediction by generalized linear regression models}
 \usage{
-baseGLMnet(trainData, testData, predMode = c("classification",
-  "probability", "regression"), paramlist = list(family = "binomial",
-  alpha = 0.5, typeMeasure = "mse", typePred = "class"))
+baseGLMnet(
+  trainData,
+  testData,
+  predMode = c("classification", "probability", "regression"),
+  paramlist = list(family = "binomial", alpha = 0.5, typeMeasure = "mse", typePred =
+    "class")
+)
 }
 \arguments{
 \item{trainData}{The input training dataset. The first column is named 

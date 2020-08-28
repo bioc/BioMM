@@ -5,9 +5,19 @@
 \title{Cross validation prediction by supervised machine learning and feature 
 selection}
 \usage{
-predByCV(data, repeats, nfolds, FSmethod, cutP, fdr,
-  FScore = MulticoreParam(), classifier, predMode, paramlist,
-  innerCore = MulticoreParam())
+predByCV(
+  data,
+  repeats,
+  nfolds,
+  FSmethod,
+  cutP,
+  fdr,
+  FScore = MulticoreParam(),
+  classifier,
+  predMode,
+  paramlist,
+  innerCore = MulticoreParam()
+)
 }
 \arguments{
 \item{data}{The input dataset. The first column

@@ -4,8 +4,14 @@
 \alias{getDataByFilter}
 \title{Return the data by feature filtering}
 \usage{
-getDataByFilter(trainData, testData, FSmethod, cutP = 0.1, fdr = NULL,
-  FScore = MulticoreParam())
+getDataByFilter(
+  trainData,
+  testData,
+  FSmethod,
+  cutP = 0.1,
+  fdr = NULL,
+  FScore = MulticoreParam()
+)
 }
 \arguments{
 \item{trainData}{The input training dataset. The first column is the label.}
@@ -30,7 +36,7 @@ c(NULL, 'fdr', 'BH', 'holm' etc).
 See also \code{\link[stats]{p.adjust}}. The default is NULL.}
 
 \item{FScore}{The number of cores used for some feature selection methods.
-The default is 10.}
+If it's NULL, then no parallel computing is applied.}
 }
 \value{
 Both training and test data (if provided) with pre-selected 

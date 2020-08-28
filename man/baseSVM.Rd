@@ -4,9 +4,13 @@
 \alias{baseSVM}
 \title{Prediction by SVM}
 \usage{
-baseSVM(trainData, testData, predMode = c("classification",
-  "probability", "regression"), paramlist = list(tuneP = TRUE, kernel =
-  "radial", gamma = 10^(-3:-1), cost = 10^(-2:2)))
+baseSVM(
+  trainData,
+  testData,
+  predMode = c("classification", "probability", "regression"),
+  paramlist = list(tuneP = TRUE, kernel = "radial", gamma = 10^(-3:-1), cost =
+    10^(-2:2))
+)
 }
 \arguments{
 \item{trainData}{The input training dataset. The first column

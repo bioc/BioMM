@@ -4,8 +4,17 @@
 \alias{predByFS}
 \title{Prediction by supervised machine learning along with feature selection}
 \usage{
-predByFS(trainData, testData, FSmethod, cutP, fdr,
-  FScore = MulticoreParam(), classifier, predMode, paramlist)
+predByFS(
+  trainData,
+  testData,
+  FSmethod,
+  cutP,
+  fdr,
+  FScore = MulticoreParam(),
+  classifier,
+  predMode,
+  paramlist
+)
 }
 \arguments{
 \item{trainData}{The input training dataset. The first column

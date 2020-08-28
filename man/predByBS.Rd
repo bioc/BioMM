@@ -5,9 +5,20 @@
 \title{Bootstrap resampling prediction via supervised machine learning with 
 feature selection}
 \usage{
-predByBS(trainData, testData, dataMode, repeats, FSmethod, cutP, fdr,
-  FScore = MulticoreParam(), classifier, predMode, paramlist,
-  innerCore = MulticoreParam())
+predByBS(
+  trainData,
+  testData,
+  dataMode,
+  repeats,
+  FSmethod,
+  cutP,
+  fdr,
+  FScore = MulticoreParam(),
+  classifier,
+  predMode,
+  paramlist,
+  innerCore = MulticoreParam()
+)
 }
 \arguments{
 \item{trainData}{The input training dataset. The first column

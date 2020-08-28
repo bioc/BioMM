@@ -4,9 +4,12 @@
 \alias{baseRandForest}
 \title{Prediction by random forest}
 \usage{
-baseRandForest(trainData, testData, predMode = c("classification",
-  "probability", "regression"), paramlist = list(ntree = 2000, nthreads =
-  20))
+baseRandForest(
+  trainData,
+  testData,
+  predMode = c("classification", "probability", "regression"),
+  paramlist = list(ntree = 2000, nthreads = 20)
+)
 }
 \arguments{
 \item{trainData}{The input training dataset. The first column

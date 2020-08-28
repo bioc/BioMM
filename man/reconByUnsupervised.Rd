@@ -4,9 +4,15 @@
 \alias{reconByUnsupervised}
 \title{Reconstruct stage-2 data by PCA}
 \usage{
-reconByUnsupervised(trainDataList, testDataList, typeMode = "regular",
-  topPC = 1, innerCore = MulticoreParam(), outFileA = NULL,
-  outFileB = NULL)
+reconByUnsupervised(
+  trainDataList,
+  testDataList,
+  typeMode = "regular",
+  topPC = 1,
+  innerCore = MulticoreParam(),
+  outFileA = NULL,
+  outFileB = NULL
+)
 }
 \arguments{
 \item{trainDataList}{The input training data list containing ordered 
