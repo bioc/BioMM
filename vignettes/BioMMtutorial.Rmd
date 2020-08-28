@@ -3,7 +3,7 @@ title: "BioMM: Biological-informed Multi-stage Machine learning framework for ph
 author:
  - name: Junfang Chen and Emanuel Schwarz
    affiliation: Central Institute of Mental Health, Heidelberg University, Germany  
-date: "Modified: 19 May 2020. Compiled: `r format(Sys.Date(), '%d %b %Y')`"
+date: "Modified: 28 Aug 2020. Compiled: `r format(Sys.Date(), '%d %b %Y')`"
 output: 
   BiocStyle::html_document: 
     toc_float: false
@@ -69,9 +69,8 @@ library(ranger)
 library(rms)
 library(glmnet)
 library(e1071)
-library(pROC)
+library(precrec)
 library(vioplot)
-library(variancePartition)
 library(CMplot)
 ```
 
@@ -152,7 +151,7 @@ file.
 supervisedStage1=TRUE
 classifier <- "randForest"
 predMode <- "classification"
-paramlist <- list(ntree=300, nthreads=10)   
+paramlist <- list(ntree=100, nthreads=10)   
 param1 <- MulticoreParam(workers = 1)
 param2 <- MulticoreParam(workers = 10) 
 
@@ -222,7 +221,7 @@ classifier <- "randForest"
 predMode <- "classification"
 paramlist <- list(ntree=300, nthreads=10)   
 param1 <- MulticoreParam(workers = 1)
-param2 <- MulticoreParam(workers = 10) 
+param2 <- MulticoreParam(workers = 1) 
 
 set.seed(123)
 result <- BioMM(trainData=studyData, testData=NULL, 
@@ -259,7 +258,7 @@ classifier <- "randForest"
 predMode <- "probability" 
 paramlist <- list(ntree=300, nthreads=40)  
 param1 <- MulticoreParam(workers = 1)
-param2 <- MulticoreParam(workers = 10)  
+param2 <- MulticoreParam(workers = 1)  
 
 set.seed(123)
 ## This will take a bit longer to run
@@ -282,11 +281,13 @@ positively outcome-associated features are plotted, since negative
 associations likely reflect random effects in the underlying data [6].
 
 ``` {r stage2dataViz, eval=TRUE}
-param <- MulticoreParam(workers = 1)  
-plotVarExplained(data=stage2dataA, posF=TRUE, 
-                 core=param, horizontal=FALSE, fileName=NULL)
+param <- MulticoreParam(workers = 1)   
+path <- "GO"
+fileName <- paste0(path, "_R2_allPosPath.png")
+plotVarExplained(data=stage2dataA, posF=TRUE, binarize=FALSE, core=param, 
+                 pathTitle=paste0(path, " pathways"), fileName)
+
 ``` 
-![](R2explained.png)
 
 #### Prioritization of outcome-associated functional patterns 
 `plotRankedFeature()` is employed to rank and visualize the outcome-associated 
@@ -297,16 +298,20 @@ features as indicated by the argument `rankMetric="R2"`. The size of the
 investigated pathway is pictured as the argument `colorMetric="size"`. 
 
 ``` {r topFstage2data, eval=TRUE} 
-param <- MulticoreParam(workers = 10) 
-
+core <- MulticoreParam(workers = 1)   
+rankMetric <- "negPlogit"
+omicsType <- "methylation"
+fileName <- paste0(omicsType, "_", path, "_topPath_", rankMetric, ".png")
 topPath <- plotRankedFeature(data=stage2dataA, 
-                             posF=TRUE, topF=10, 
-                             blocklist=pathlist,
-                             rankMetric="R2", 
-                             colorMetric="size", 
-                             core=param, fileName=NULL)
+                  posF=TRUE, topF=10, binarize=FALSE,
+                  blocklist=pathlist,  
+                  rankMetric=rankMetric, 
+                  colorMetric="size", 
+                  core, pathTitle=paste0(path, " pathways"), fileName=fileName) 
+
+
 ``` 
-![](plotTopF10_R2_pathway.png)
+
 
 #### The significance of CpGs in pathways of interest
 `cirPlot4pathway()` illustrates the significance of the individual CpGs falling 
@@ -314,17 +319,16 @@ into a set of pathways. Here the top 10 outcome-associated pathways are investig
 Negative log P value is used to define the significance of each CpG within these pathways.
 
 ``` {r cirPlot, eval=TRUE}  
-core <- MulticoreParam(workers = 10)   
+core <- MulticoreParam(workers = 1)   
 pathID <- gsub("\\.", ":", rownames(topPath))
 pathSet <- pathlist[is.element(names(pathlist), pathID)]
 pathMatch <- pathSet[match(pathID, names(pathSet))]
+fileName <- paste0(omicsType, "_", path, "_SigRankBy_", rankMetric)
 
-cirPlot4pathway(datalist=pathMatch, 
-                topPathID=names(pathMatch), core, fileName=NULL)
-
+cirPlot4pathway(datalist=pathMatch, topPathID=names(pathMatch), core, fileName)
 
 ``` 
-![](Circular-Manhattan.pval.jpg)
+
 
 ## Computational consideration
 BioMM with supervised models at both stages incorporating pathway based 
