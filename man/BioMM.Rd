@@ -4,13 +4,35 @@
 \alias{BioMM}
 \title{BioMM end-to-end prediction}
 \usage{
-BioMM(trainData, testData, pathlistDB, featureAnno, restrictUp,
-  restrictDown, minPathSize, supervisedStage1 = TRUE, typePCA,
-  resample1 = "BS", resample2 = "CV", dataMode = "allTrain",
-  repeatA1 = 100, repeatA2 = 1, repeatB1 = 20, repeatB2 = 1,
-  nfolds = 10, FSmethod1, FSmethod2, cutP1, cutP2, fdr2,
-  FScore = MulticoreParam(), classifier, predMode, paramlist,
-  innerCore = MulticoreParam())
+BioMM(
+  trainData,
+  testData,
+  pathlistDB,
+  featureAnno,
+  restrictUp,
+  restrictDown,
+  minPathSize,
+  supervisedStage1 = TRUE,
+  typePCA,
+  resample1 = "BS",
+  resample2 = "CV",
+  dataMode = "allTrain",
+  repeatA1 = 100,
+  repeatA2 = 1,
+  repeatB1 = 20,
+  repeatB2 = 1,
+  nfolds = 10,
+  FSmethod1,
+  FSmethod2,
+  cutP1,
+  cutP2,
+  fdr2,
+  FScore = MulticoreParam(),
+  classifier,
+  predMode,
+  paramlist,
+  innerCore = MulticoreParam()
+)
 }
 \arguments{
 \item{trainData}{The input training dataset. The first column
