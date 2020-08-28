@@ -1,4 +1,4 @@
-# File : resultReport.R Author : Junfang Chen
+# File : resultReport.R   Author : Junfang Chen
 
 
 
@@ -45,21 +45,21 @@ classifiACC <- function(dataY, predY) {
 }
 
 
-#' Compute the evaluation metrics
+#' Compute the machine learning evaluation metrics
 
 #' @description
 #' Compute the evaluation metrics in the classification setting: 
-#' area under curve (AUC), classification accuracy (ACC) and 
-#' the pseudo R square (R2).
+#' area under curve (AUC), the area under the Precision-Recall curve, 
+#' classification accuracy (ACC) and the pseudo R square (R2).
 
 #' @param dataY The observed outcome.
 #' @param predY The predicted outcome.
 #' @details If all samples are predicted into one class, then R2 is 0.
 
-#' @return A set of metrics for model evaluation: AUC, ACC and R2.
+#' @return A set of metrics for model evaluation: AUC, AUCPR, ACC and R2.
 #' @export 
 #' @import rms
-#' @importFrom pROC roc
+#' @import precrec
 #' @author Junfang Chen 
 #' @examples  
 #' ## Load data  
@@ -68,7 +68,7 @@ classifiACC <- function(dataY, predY) {
 #' dataY <- methylData[,1]
 #' methylSub <- data.frame(label=dataY, methylData[,c(2:1001)])  
 #' library(ranger) 
-#' library(pROC)
+#' library(precrec)
 #' library(rms)
 #' library(BiocParallel) 
 #' param1 <- MulticoreParam(workers = 1) 
@@ -80,22 +80,27 @@ classifiACC <- function(dataY, predY) {
 #'                   predMode='classification', 
 #'                   paramlist=list(ntree=300, nthreads=20),
 #'                   innerCore=param2)   
-#' accuracy <- getMetrics(dataY=dataY, predY=predY)
-#' print(accuracy)  
+#' metrics <- getMetrics(dataY=dataY, predY=predY)
+#' print(metrics)  
+
+ 
 
 getMetrics <- function(dataY, predY){
     
-    auc <- pROC::roc(dataY, predY)$auc      
-    predY <- ifelse(predY>=.5, 1, 0) 
-    cat("\n Levels of predicted Y =", nlevels(factor(predY)),"\n\n") 
+    sscurves <- evalmod(scores=predY, labels=dataY)  
+    AUC <- attr(sscurves[[1]][[1]], "auc")
+    AUCPR <- attr(sscurves[[2]][[1]], "auc") 
+    # predY <- ifelse(predY>=.5, 1, 0) 
+
     ACC <- classifiACC(dataY, predY)  
     if (nlevels(factor(predY)) > 1){
         R2 <- lrm(dataY ~ predY)$stats["R2"]
     } else {
         R2 <- 0
     }
-    eMat <- data.frame(AUC=round(auc,3), ACC=round(ACC,3), R2 = round(R2, 3))  
-    print(eMat) 
+    eMat <- data.frame(AUC=round(AUC,3), AUCPR=round(AUCPR,3), 
+                       ACC=round(ACC,3), R2 = round(R2, 3))  
+
     return(eMat)
 } 
 
@@ -112,9 +117,13 @@ getMetrics <- function(dataY, predY){
 #' the first column is the label (the outcome).
 #' @param posF A logical value indicating if only positively outcome-associated
 #' features should be used. (Default: TRUE) 
+#' @param binarize A logical value indicating if the individual features under
+#' investigation should be binarized. The default is FALSE, which provides the 
+#' estimated class probabilities for each pathway-level feature. If TRUE, then
+#' the binary output is given for each feature.
 #' @param core The number of cores used for computation. (Default: 1)
-#' @param horizontal A logical value indicating if the plot should be horizontal 
-#' or not. The default is FALSE.
+#' @param pathTitle A string indicating the name of pathway under investigation.
+#' This will be displayed as the name of y-axis.
 #' @param fileName The file name specified for the plot. If it is not NULL,
 #' then the plot will be generated. The plot will project the data on the 
 #' first two components. (Default: 'R2explained.png') 
@@ -127,21 +136,22 @@ getMetrics <- function(dataY, predY){
 #' Explorations Newsletter, 12(2), 11-15. 
 
 #' @import BiocParallel
-#' @import variancePartition
 #' @import grDevices
 #' @import vioplot
 #' @export  
 
 
-plotVarExplained <- function(data, posF = TRUE, 
-    core = MulticoreParam(), horizontal = FALSE, fileName = NULL) {
+plotVarExplained <- function(data, posF = TRUE, binarize = FALSE, 
+    core = MulticoreParam(), pathTitle = "GO pathways", fileName = NULL) {
     
     if (colnames(data)[1] != "label") {
         stop("The first column of the 'data' must be the 'label'!")
     }
     dataX <- data[, -1]
-    ## convert prob. to integer
-    dataX <- apply(dataX, 2, round)
+    if (binarize == TRUE){
+        ## convert prob. to integer
+        dataX <- apply(dataX, 2, round)  
+    }
     dataY <- data[, 1]
     if (is.factor(dataY)) {
         dataY <- as.numeric(dataY) - 1
@@ -158,31 +168,26 @@ plotVarExplained <- function(data, posF = TRUE,
     } else {
         dataX <- dataXsub
     }
-    featurelist <- seq_len(ncol(dataXsub))
 
+    featurelist <- seq_len(ncol(dataXsub))
     r2mat <- unlist(bplapply(featurelist, function(i) {
-        r2 <- lrm(dataXsub[, i] ~ dataY)$stats["R2"]
+        r2 <- lrm(dataY ~ dataXsub[,i])$stats["R2"]
     }, BPPARAM = core))
     
     r2plot <- data.frame(Stage2data = r2mat) 
-    colnames(r2plot) <- paste0("Biological Pathway")
+    colnames(r2plot) <- pathTitle
     rownames(r2plot) <- colnames(dataXsub)
     head(r2plot)
     if (is.null(fileName)) {
         fileName <- "R2explained.png"
-    }
-    if (horizontal == FALSE){
-        png(fileName, width = 5, height = 6, units = "in", res = 330)
-        print(plotVarPart(r2plot, label.angle = 10, ylab = "Variance explained (%)", 
-            convertToPercent = FALSE))
-        dev.off()
-    } else if (horizontal == TRUE){
-        png(fileName, width = 8, height = 6, units = "in", res = 330)
-        vioplot(r2plot, names=c("Biological pathway"), main = "", col="#F8766D", 
+        vioplot(r2plot, names=pathTitle, main = "", col="#F8766D", 
+            horizontal=TRUE, xlab="Variance explained (%)",  areaEqual=TRUE)
+    } else {
+        png(fileName, width = 7, height = 5, units = "in", res = 330)
+        vioplot(r2plot, names=pathTitle, main = "", col="#F8766D", 
             horizontal=TRUE, xlab="Variance explained (%)",  areaEqual=TRUE)
         dev.off()
     }
-    
 }
 
 
@@ -205,13 +210,22 @@ plotVarExplained <- function(data, posF = TRUE,
 #' For each matrix, rows are the samples and columns are the probe names,  
 #' except that the first column is named 'label'. See also 
 #' \code{\link{omics2pathlist}}.
+#' @param binarize A logical value indicating if the individual features under
+#' investigation should be binarized. The default is FALSE, which provides the 
+#' estimated class probabilities for each pathway-level feature. If TRUE, then
+#' the binary output is given for each feature.
 #' @param rankMetric A string representing the metrics used for ranking. 
-#' Valid options are c('AUC', 'ACC', 'R2', 'size').
-#' 'size' is the block size.
+#' Valid options are c("AUC", "R2", "Zscore", "negPlogit", "negPwilcox").
+#' "negPlogit" denotes the negative log P value from the logistic regression 
+#' and "negPwilcox" means the negative log P value based on the Wilcoxon test. 
+#' "size" is the block size.
 #' @param colorMetric A string representing the metric used to color the plot. 
-#' Valid options are c('AUC', 'ACC', 'R2', 'size').
-#' 'size' is the block size.
+#' Valid options are c("AUC", "R2", "Zscore", "negPlogit", "negPwilcox").
+#' "negPlogit" denotes the negative log P value from the logistic regression 
+#' and "negPwilcox" means the negative log P value based on wilcoxon test. 
+#' "size" is the block size.
 #' @param core The number of cores used for computation. (Default: 10)
+#' @param pathTitle A string indicating the name of pathway under investigation.
 #' @param fileName The plot file name. (Default: 'plottopF.png') 
 
 #' @return An output image file and the summary statistics of the top pathways. 
@@ -232,11 +246,10 @@ plotVarExplained <- function(data, posF = TRUE,
 #' @seealso  \code{\link{omics2pathlist}}.
 
 
-
-plotRankedFeature <- function(data, posF = TRUE, topF = 10, blocklist, 
-    rankMetric = c("AUC", "ACC", "R2", "size"), 
-    colorMetric = c("AUC", "ACC", "R2", "size"), 
-    core = MulticoreParam(), fileName = NULL) {
+plotRankedFeature <- function(data, posF = TRUE, topF = 10, blocklist, binarize=FALSE, 
+    rankMetric = c("AUC", "R2", "Zscore", "negPlogit", "negPwilcox", "size"), 
+    colorMetric = c("AUC", "R2", "Zscore", "negPlogit", "negPwilcox", "size"),
+    core = MulticoreParam(), pathTitle = "GO pathways", fileName = NULL) {
     
     .getBlockSize <- function(blocklist) {
      
@@ -248,13 +261,14 @@ plotRankedFeature <- function(data, posF = TRUE, topF = 10, blocklist,
         return(blockSize)
     }
     
-    
     if (colnames(data)[1] != "label") {
         stop("The first column of the 'data' must be the 'label'!")
     }
     dataX <- data[, -1]
     ## convert prob. to integer
-    dataX <- apply(dataX, 2, round)
+    if (binarize == TRUE){
+        dataX <- apply(dataX, 2, round)    
+    }
     dataY <- data[, 1]
     if (is.factor(dataY)) {
         dataY <- as.numeric(dataY) - 1
@@ -271,23 +285,30 @@ plotRankedFeature <- function(data, posF = TRUE, topF = 10, blocklist,
             stop("'topF' bigger than # of positively associated features!")
         }
         ## 'NA' may appear, use is.element to avoid NA.
-        dataXsub <- dataX[, is.element(corr>0, TRUE)] 
-        featurelist <- as.list(seq_len(ncol(dataXsub)))
-        metrics <- unlist(bplapply(featurelist, function(i) {
-            invisible(capture.output(eMat <- getMetrics(dataXsub[, i], dataY)))
-            eMat
-        },  BPPARAM = core))
-    } else {
-        featurelist <- as.list(seq_len(ncol(dataX)))
-        metrics <- unlist(bplapply(featurelist, function(i) {
-            invisible(capture.output(eMat <- getMetrics(dataX[, i], dataY)))
-            eMat
-        }, BPPARAM = core))
+        dataXsub <- dataX[, is.element(corr>0, TRUE)]  
+    } else {  
         dataXsub <- dataX
     }
-    
-    eMat <- matrix(unlist(metrics), nrow = ncol(dataXsub), byrow = TRUE)
-    colnames(eMat) <- c("AUC", "ACC", "R2") 
+
+    featurelist <- as.list(seq_len(ncol(dataXsub)))
+    metrics <- unlist(bplapply(featurelist, function(i) { 
+        predY <- dataXsub[,i]
+        eMatTmp <- getMetrics(dataY, predY)
+        eMatTmp <- eMatTmp[c(1,4)]
+        fit <- glm(dataY~predY, family="binomial")
+        zPvMat <- summary(fit)$coefficients[,3:4]
+        zPv <- zPvMat[is.element(rownames(zPvMat), "predY"),]   
+        names(zPv) <- c("Zscore", "negPlogit")
+        Zscore <- round(zPv[1], 3)
+        negPlogit <- round(-log10(zPv[2]), 3)
+        pWilcox <- wilcox.test(predY ~ dataY)$p.value  
+        negPwilcox <- round(-log10(pWilcox), 3) 
+        metrics <- unlist(c(eMatTmp, Zscore, negPlogit, negPwilcox=negPwilcox))
+        metrics
+    },  BPPARAM = core))
+ 
+    eMat <- matrix(unlist(metrics), nrow = ncol(dataXsub), byrow = TRUE) 
+    colnames(eMat) <- names(metrics)[seq_len(ncol(eMat))]
     goID <- gsub("\\:", ".", colnames(dataXsub))
     rownames(eMat) <- goID 
     ## checking the 'blocklist'
@@ -307,42 +328,48 @@ plotRankedFeature <- function(data, posF = TRUE, topF = 10, blocklist,
     topPat$ID <- factor(topPat$ID, levels = rev(unique(topPat$ID))) 
     x <- "ID"
     y <- rankMetric 
-    colorby <- match.arg(colorMetric) 
-    subtitle <- "Pathways" 
-    title <- paste0("Top ", topF, " ", subtitle)
+    colorby <- match.arg(colorMetric)  
+    title <- paste0("Top ", topF, " ", pathTitle)
     if (is.null(fileName)) {
         fileName <- paste0("plotTopF", topF, "_", rankMetric, "_pathway.png")
     }
     png(fileName, width = 5, height = 6, units = "in", res = 330)
-    print(ggplot(topPat, aes_string(x = x, y = y, fill = colorby)) + 
-        scale_fill_continuous(low = "red", high = "blue", name = colorby, 
+    p <- ggplot(topPat, aes_string(x = x, y = y, fill = colorby)) + 
+        scale_fill_continuous(low = "gray", high = "#F8766D", name = colorby, 
             guide = guide_colorbar(reverse = TRUE)) + 
         geom_bar(stat = "identity") + coord_flip() + ggtitle(title) + 
-        xlab(NULL) + ylab(y))
+        xlab(NULL) + ylab(y)
+    if (rankMetric == "negPlogit" | rankMetric == "negPwilcox"){
+        p <- p + geom_hline(yintercept=-log10(0.05), linetype="dashed", color="red")
+        p <- p + labs(y = "-logP")   
+    }    
+    print(p)
     dev.off()
-
+ 
     return(topPat)
 }
-
 
 
 ############################################################################### 
 
 #' Circular plot for a set of pathways
 
-#' @description Plot the individual CpGs within a given set of pathways.
-#' The significance of the CpGs are illustrated by the negative log P value.
+#' @description The individual CpGs or genes within a given set of pathways are  
+#' displayed as the dots in the resulting plot. The significance of the CpGs or genes   
+#' are illustrated by the negative log P value.
 
 #' @param datalist The input data list containing ordered 
 #' collections of matrices.
 #' @param topPathID A predefined pathway IDs.  
 #' @param core The number of cores used for computation. (Default: 10)
-#' @param fileName The plot file name. (Default: 'cpgTopGOplot.png') 
+#' @param fileName Add a character to the output file name. 
+#' (Default: 'Circular-Manhattan.pval.jpeg') 
 
 #' @return An output image file. 
 
 #' @details Top 10 or 20 pathways are usually suggested to be visualized.
-
+#' The significant features (if any) are highlighted using filled diamond. 
+#' The significance line is set as 0.05 marked as dashed red line.
 #' @import BiocParallel
 #' @import CMplot
 #' @export
@@ -353,7 +380,7 @@ cirPlot4pathway <- function(datalist, topPathID, core = MulticoreParam(), fileNa
   
     sublistV0 <- datalist[is.element(names(datalist), topPathID)]  
     sublist <- sublistV0[match(topPathID, names(sublistV0))]   
-    message(paste0("Check top ", length(sublist), " pathways >> "))
+    message(paste0("Checking top ", length(sublist), " pathways >> "))
 
     cpgPvByGO <- list()
     cpg <- c()
@@ -372,7 +399,12 @@ cirPlot4pathway <- function(datalist, topPathID, core = MulticoreParam(), fileNa
 
         featurelist <- as.list(seq_len(ncol(dataX)))
         pvalTmp <- unlist(bplapply(featurelist, function(i){ 
-            wilcox.test(dataX[,i] ~ dataY)$p.value 
+            # wilcox.test(dataX[,i] ~ dataY)$p.value  
+            predY <- dataX[,i] 
+            fit <- glm(dataY~predY, family="binomial")
+            zPvMat <- summary(fit)$coefficients[,3:4]
+            zPv <- zPvMat[is.element(rownames(zPvMat), "predY"),]   
+            pval <- zPv[2] 
         }, BPPARAM = core))    
         names(pvalTmp)  = colnames(dataX) 
 
@@ -384,16 +416,13 @@ cirPlot4pathway <- function(datalist, topPathID, core = MulticoreParam(), fileNa
     } 
  
     cpgResults <- data.frame(cpg, pathway, pos, pval, stringsAsFactors=FALSE)
-    if (is.null(fileName)) {
-        fileName <- "cpgTopGOplot.png"
-    }
-    png(fileName, res=300, width=800, height=800)
-    CMplot(cpgResults, plot.type="c", r=1.6, 
-            cir.legend=TRUE, cex.axis=0.8,
-            outward=TRUE, cir.legend.col="black", cir.chr.h=.1,
-            chr.den.col="orange", file="jpg",
-            memo="", dpi=300, chr.labels=names(sublist))
-    dev.off()
-
+   
+    ## -log10 was used
+    CMplot(cpgResults, plot.type="c", r=2, 
+            cir.legend=TRUE, cex.axis=0.9,
+            outward=TRUE, cir.legend.col="black", cir.chr.h=0.8,
+            threshold=0.05, signal.pch=18,
+            chr.den.col="white", file="jpg",
+            memo=fileName, dpi=400, chr.labels=names(sublist))
+ 
  }
-
