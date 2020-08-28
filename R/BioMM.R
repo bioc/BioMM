@@ -33,7 +33,7 @@
 #' dataY <- methylData[,1]
 #' ## test a subset of genome-wide methylation data at random
 #' methylSub <- data.frame(label=dataY, methylData[,c(2:2001)])  
-#' trainIndex <- sample(nrow(methylSub), 30)
+#' trainIndex <- sample(nrow(methylSub), 12)
 #' trainData = methylSub[trainIndex,]
 #' testData = methylSub[-trainIndex,]
 #' library(ranger)
@@ -124,7 +124,7 @@ baseRandForest <- function(trainData, testData, predMode = c("classification",
 #' dataY <- methylData[,1]
 #' ## select a subset of genome-wide methylation data at random
 #' methylSub <- data.frame(label=dataY, methylData[,c(2:2001)])  
-#' trainIndex <- sample(nrow(methylSub), 30)
+#' trainIndex <- sample(nrow(methylSub), 12)
 #' trainData = methylSub[trainIndex,]
 #' testData = methylSub[-trainIndex,]
 #' library(e1071)
@@ -255,7 +255,7 @@ baseSVM <- function(trainData, testData,
 #' dataY <- methylData[,1]
 #' ## select a subset of genome-wide methylation data at random
 #' methylSub <- data.frame(label=dataY, methylData[,c(2:2001)])  
-#' trainIndex <- sample(nrow(methylSub), 30)
+#' trainIndex <- sample(nrow(methylSub), 16)
 #' trainData = methylSub[trainIndex,]
 #' testData = methylSub[-trainIndex,]
 #' library(glmnet)
@@ -352,7 +352,7 @@ baseGLMnet <- function(trainData, testData,
 #' dataY <- methylData[,1]
 #' ## select a subset of genome-wide methylation data at random
 #' methylSub <- data.frame(label=dataY, methylData[,c(2:2001)])  
-#' trainIndex <- sample(nrow(methylSub), 30)
+#' trainIndex <- sample(nrow(methylSub), 16)
 #' trainData = methylSub[trainIndex,]
 #' testData = methylSub[-trainIndex,]
 #' library(ranger) 
@@ -432,7 +432,7 @@ baseModel <- function(trainData, testData,
 #' dataY <- methylData[,1]
 #' ## select a subset of genome-wide methylation data at random
 #' methylSub <- data.frame(label=dataY, methylData[,c(2:501)])  
-#' trainIndex <- sample(nrow(methylSub), 30)
+#' trainIndex <- sample(nrow(methylSub), 16)
 #' trainData = methylSub[trainIndex,]
 #' testData = methylSub[-trainIndex,]
 #' library(ranger) 
@@ -530,7 +530,7 @@ predByFS <- function(trainData, testData, FSmethod, cutP, fdr,
 #' dataY <- methylData[,1]
 #' ## select a subset of genome-wide methylation data at random
 #' methylSub <- data.frame(label=dataY, methylData[,c(2:2001)])  
-#' trainIndex <- sample(nrow(methylSub), 30)
+#' trainIndex <- sample(nrow(methylSub), 16)
 #' trainData = methylSub[trainIndex,]
 #' testData = methylSub[-trainIndex,]
 #' library(ranger) 

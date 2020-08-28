@@ -75,7 +75,7 @@ methylData <- readRDS(methylfile)
 dataY <- methylData[,1]
 ## select a subset of genome-wide methylation data at random
 methylSub <- data.frame(label=dataY, methylData[,c(2:2001)])  
-trainIndex <- sample(nrow(methylSub), 30)
+trainIndex <- sample(nrow(methylSub), 16)
 trainData = methylSub[trainIndex,]
 testData = methylSub[-trainIndex,]
 library(ranger) 
