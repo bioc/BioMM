@@ -928,15 +928,15 @@ BioMMstage2pred <- function(trainData, testData, resample = "CV", dataMode,
         }
         
         cvYscore <- predY
-        if (predMode == "probability") {
-            predY <- ifelse(predY >= 0.5, 1, 0)
-            metricCV <- getMetrics(dataY = trainDataY, predY)
-        } else if (predMode == "classification") {
-            metricCV <- getMetrics(dataY = trainDataY, predY)
-        } else if (predMode == "regression") {
-            metricCV <- cor(trainDataY, predY) 
-        }
-        print(metricCV)
+        # if (predMode == "probability") {
+        #     predY <- ifelse(predY >= 0.5, 1, 0)
+        #     metricCV <- getMetrics(dataY = trainDataY, predY)
+        # } else if (predMode == "classification") {
+        #     metricCV <- getMetrics(dataY = trainDataY, predY)
+        # } else if (predMode == "regression") {
+        #     metricCV <- cor(trainDataY, predY) 
+        # }
+        # print(metricCV)
 
     }
     
@@ -951,16 +951,16 @@ BioMMstage2pred <- function(trainData, testData, resample = "CV", dataMode,
             innerCore)
         testYscore <- predY
         ## Prediction performance for the ind. test performance
-        message(paste0("Test set performance: "))
-        if (predMode == "probability") {
-            predY <- ifelse(predY >= 0.5, 1, 0)
-            metricTest <- getMetrics(dataY = testY, predY)
-        } else if (predMode == "classification") {
-            metricTest <- getMetrics(dataY = testY, predY)
-        } else if (predMode == "regression") {
-            metricTest <- cor(testY, predY)
-        }        
-        print(metricTest)
+        # message(paste0("Test set performance: "))
+        # if (predMode == "probability") {
+        #     predY <- ifelse(predY >= 0.5, 1, 0)
+        #     metricTest <- getMetrics(dataY = testY, predY)
+        # } else if (predMode == "classification") {
+        #     metricTest <- getMetrics(dataY = testY, predY)
+        # } else if (predMode == "regression") {
+        #     metricTest <- cor(testY, predY)
+        # }        
+        # print(metricTest)
         # result <- list(metricCV, metricTest)
         result <- list(cvYscore, testYscore)
     } else {
@@ -1257,21 +1257,14 @@ reconByUnsupervised <- function(trainDataList, testDataList, typeMode = "regular
 #' ##                 classifier, predMode, paramlist, innerCore=param2)
 
 #' ## if (is.null(testData)) {
-#' ##     predY <- result
-#' ##     if (predMode == "probability") {
-#' ##       predY <- ifelse(predY >= 0.5, 1, 0)
-#' ##     }
+#' ##     predY <- result 
 #' ##     metricCV <- getMetrics(dataY = trainDataY, predY)
 #' ##     message("Cross-validation prediction performance:")
 #' ##     print(metricCV)
 #' ## } else if (!is.null(testData)){
 #' ##     testDataY <- testData[,1]
 #' ##     cvYscore <- result[[1]]
-#' ##     testYscore <- result[[2]]
-#' ##     if (predMode == "probability") {
-#' ##         cvYscore <- ifelse(cvYscore >= 0.5, 1, 0)
-#' ##         testYscore <- ifelse(testYscore >= 0.5, 1, 0)
-#' ##     }
+#' ##     testYscore <- result[[2]] 
 #' ##     metricCV <- getMetrics(dataY = trainDataY, cvYscore)
 #' ##     metricTest <- getMetrics(dataY = testDataY, testYscore)
 #' ##     message("Cross-validation performance:")

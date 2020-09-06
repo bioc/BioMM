@@ -194,23 +194,13 @@ result <- BioMM(trainData=trainData, testData=NULL,
                 classifier, predMode, paramlist, innerCore=core)
 
 if (is.null(testData)) {
-    predY <- result
-    if (predMode == "probability") {
-      predY <- ifelse(predY >= 0.5, 1, 0)
-    }
-    metricCV <- getMetrics(dataY = trainDataY, predY)
+    metricCV <- getMetrics(dataY = trainDataY, predY = result)
     message("Cross-validation prediction performance:")
     print(metricCV)
 } else if (!is.null(testData)){
-    testDataY <- testData[,1]
-    cvYscore <- result[[1]]
-    testYscore <- result[[2]]
-    if (predMode == "probability") {
-        cvYscore <- ifelse(cvYscore >= 0.5, 1, 0)
-        testYscore <- ifelse(testYscore >= 0.5, 1, 0)
-    }
-    metricCV <- getMetrics(dataY = trainDataY, cvYscore)
-    metricTest <- getMetrics(dataY = testDataY, testYscore)
+    testDataY <- testData[,1]  
+    metricCV <- getMetrics(dataY = trainDataY, cvYscore = result[[1]])
+    metricTest <- getMetrics(dataY = testDataY, testYscore = result[[2]])
     message("Cross-validation performance:")
     print(metricCV)
     message("Test set prediction performance:")
@@ -257,12 +247,9 @@ result <- BioMM(trainData=trainData, testData=NULL,
                 classifier, predMode, paramlist, innerCore=core)
 
 ## Cross-validation is applied on the training data, therefore 'result' only returns the CV predicted score.
-predY <- result
-if (predMode == "probability") { predY <- ifelse(predY >= 0.5, 1, 0) }
-metricCV <- getMetrics(dataY = trainDataY, predY)
+metricCV <- getMetrics(dataY = trainDataY, predY = result)
 message("Cross-validation prediction performance:")
 print(metricCV)
-
 ``` 
 
 

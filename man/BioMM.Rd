@@ -175,21 +175,14 @@ param2 <- MulticoreParam(workers = 20)
 ##                 cutP1=0.1, cutP2=0.1, fdr2=NULL, FScore=param1, 
 ##                 classifier, predMode, paramlist, innerCore=param2)
 ## if (is.null(testData)) {
-##     predY <- result
-##     if (predMode == "probability") {
-##       predY <- ifelse(predY >= 0.5, 1, 0)
-##     }
+##     predY <- result 
 ##     metricCV <- getMetrics(dataY = trainDataY, predY)
 ##     message("Cross-validation prediction performance:")
 ##     print(metricCV)
 ## } else if (!is.null(testData)){
 ##     testDataY <- testData[,1]
 ##     cvYscore <- result[[1]]
-##     testYscore <- result[[2]]
-##     if (predMode == "probability") {
-##         cvYscore <- ifelse(cvYscore >= 0.5, 1, 0)
-##         testYscore <- ifelse(testYscore >= 0.5, 1, 0)
-##     }
+##     testYscore <- result[[2]] 
 ##     metricCV <- getMetrics(dataY = trainDataY, cvYscore)
 ##     metricTest <- getMetrics(dataY = testDataY, testYscore)
 ##     message("Cross-validation performance:")
